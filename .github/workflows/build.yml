@@ -59,9 +59,11 @@ jobs:
       - name: Download APK from build
         uses: actions/download-artifact@v1
         with:
-          name: |
-            apk
-            SHA256
+          name: apk
+      - name: Download SHA256 from build
+        uses: actions/download-artifact@v1
+        with:
+          name: SHA256
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
