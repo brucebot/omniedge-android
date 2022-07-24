@@ -36,7 +36,6 @@ jobs:
         run: bash ./gradlew assembleDebug --stacktrace
       - name: Generate SHA256 checksums
         run: |
-          
           sha256sum app/build/outputs/apk/debug/app-debug.apk >> OmniEdge-Android-${{ github.ref_name }}.SHA256.txt
           cat OmniEdge-Android-${{ github.ref_name }}.SHA256.txt
           pwd
@@ -60,7 +59,9 @@ jobs:
       - name: Download APK from build
         uses: actions/download-artifact@v1
         with:
-          name: apk  
+          name: |
+            apk
+            SHA256
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
