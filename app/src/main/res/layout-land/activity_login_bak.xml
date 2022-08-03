@@ -204,8 +204,6 @@
         android:textAllCaps="true"
         android:textSize="20sp"
         android:typeface="monospace"
-        app:buttonSize="wide"
-        app:colorScheme="dark"
         app:layout_constraintBottom_toTopOf="@id/guideline_bottom"
         app:layout_constraintLeft_toRightOf="@id/guideline_middle"
         app:layout_constraintRight_toLeftOf="@id/guideline_right"
