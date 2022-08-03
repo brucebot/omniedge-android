@@ -2,9 +2,9 @@ name: Build android
 
 on:
   push:
-    branches:
-      - main
-      - dev
+    # branches:
+    #   - main
+    #   - dev
     tags:
       - 'v*.*.*'
 
@@ -34,11 +34,22 @@ jobs:
           java-version: 11
       - name: Build APK
         run: bash ./gradlew assembleDebug --stacktrace
+      - name: Generate SHA256 checksums
+        run: |
+          sha256sum app/build/outputs/apk/debug/app-debug.apk >> OmniEdge-Android-${{ github.ref_name }}.SHA256.txt
+          cat OmniEdge-Android-${{ github.ref_name }}.SHA256.txt
+          pwd
       - name: Upload APK
         uses: actions/upload-artifact@v1
         with:
           name: apk
           path: app/build/outputs/apk/debug/app-debug.apk
+      - name: Upload SHA256
+        uses: actions/upload-artifact@v1
+        with:
+          name: SHA256
+          path: OmniEdge-Android-${{ github.ref_name }}.SHA256.txt
+          
   release:
     name: Release APK
     needs: apk
@@ -48,7 +59,11 @@ jobs:
       - name: Download APK from build
         uses: actions/download-artifact@v1
         with:
-          name: apk  
+          name: apk
+      - name: Download SHA256 from build
+        uses: actions/download-artifact@v1
+        with:
+          name: SHA256
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -57,6 +72,7 @@ jobs:
         with:
           tag_name: ${{ github.ref }}
           release_name: OmniEdge-Android-${{ github.ref }} 
+        
       - name: Upload Release APK
         id: upload_release_asset
         uses: actions/upload-release-asset@v1.0.1
@@ -67,3 +83,14 @@ jobs:
           asset_path: apk/app-debug.apk
           asset_name: OmniEdge-Android-${{ github.ref_name }}.apk
           asset_content_type: application/zip
+          
+      - name: Upload Release SHA256
+        id: upload_release_SHA256
+        uses: actions/upload-release-asset@v1.0.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: SHA256/OmniEdge-Android-${{ github.ref_name }}.SHA256.txt
+          asset_name: OmniEdge-Android-${{ github.ref_name }}.SHA256.txt
+          asset_content_type: application/txt
